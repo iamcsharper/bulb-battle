@@ -6,10 +6,6 @@ const miniCss = require('mini-css-extract-plugin');
 module.exports = {
   entry: './src/index.ts',
   target: "web",
-  devServer: {
-    contentBase: './dist',
-    // open: true
-  },
   output: {
     filename: '[name].js',
     sourceMapFilename: "[file].map",
@@ -34,7 +30,7 @@ module.exports = {
         test: /\.js$/,
         use: ["source-map-loader"],
         exclude: [
-          path.resolve(__dirname, "node_modules/excalibur")
+          path.resolve(__dirname, "node_modules/sim-ecs")
         ],
         enforce: "pre",
       },
@@ -54,6 +50,7 @@ module.exports = {
     },
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: "Webpack Output",
       template: path.join(__dirname, './src/index.html'),
@@ -62,6 +59,5 @@ module.exports = {
     new miniCss({
       filename: 'style.css',
     }),
-    new CleanWebpackPlugin(),
   ],
 };

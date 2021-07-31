@@ -27,6 +27,7 @@ export abstract class Level implements ILevel {
     public world: IWorld;
 
     constructor(public name: string) {
+        console.log('Level loaded', name);
         const world = this.createWorld();
 
         if (!world) {
