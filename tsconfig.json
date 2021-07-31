@@ -2,11 +2,21 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "alwaysStrict": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "es5",
-    "module": "es6",
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "removeComments": true,
     "sourceMap": true,
     "strict": true,
-    "outDir": "./dist/"
+    "target": "es2017"
   }
 }

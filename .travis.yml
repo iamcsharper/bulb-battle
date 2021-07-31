@@ -9,4 +9,4 @@ cache:
     - $HOME/.npm
 script:
   - npm run build:dev
-  - npm run build:prod
+  - npm run build:build
