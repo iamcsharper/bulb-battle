@@ -1,5 +1,8 @@
+import './server';
+import { Level } from './levels/level.h';
 import { Topdown } from './levels/topdown';
 import './scss/app.scss';
+import { loadPhysics, _Box2D } from './server';
 
 export const prepareRenderContext = () => {
     const canvasEle = document.querySelector('canvas');
@@ -20,7 +23,9 @@ export const prepareRenderContext = () => {
 
 window.addEventListener('resize', prepareRenderContext);
 
-const levels = {
+const levels:{
+    [name: string]: new (...args:[_Box2D]) => Level,
+} = {
     'topdown': Topdown,
 };
 
@@ -28,6 +33,8 @@ type levelType = keyof typeof levels;
 
 // main function
 (async () => {
+    const box2D = await loadPhysics();
+
     const options = Object.keys(levels)
         .map((e,i) => (`${i+1}) ${e}`));
     options.push('exit (or empty)');
@@ -35,8 +42,8 @@ type levelType = keyof typeof levels;
     let requestedLevel = 'topdown';
 
     while (requestedLevel !== 'exit') {
-        const level: levelType = 'topdown';
-        let world = new levels[level];
+        const level = requestedLevel as levelType;
+        let world = new levels[level](box2D);
 
         await world.run();
 

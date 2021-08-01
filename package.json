@@ -4,26 +4,33 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "box2d-wasm": "^6.0.4",
+    "keycode-js": "^3.1.0",
     "sim-ecs": "file:./node_modules/sim-ecs"
   },
   "devDependencies": {
-    "webpack-merge": "5.8.0",
-    "file-loader": "^6.2.0",
-    "compression-webpack-plugin": "7.1.2",
-    "terser-webpack-plugin": "5.1.4",
+    "@types/node": "^16.4.8",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "compression-webpack-plugin": "7.1.2",
+    "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
     "mini-css-extract-plugin": "^2.1.0",
     "node-sass": "^6.0.1",
+    "path-browserify": "^1.0.1",
     "pre-commit": "^1.2.2",
     "sass-loader": "^12.1.0",
     "source-map-loader": "^3.0.0",
+    "terser-webpack-plugin": "5.1.4",
     "ts-loader": "^9.2.4",
+    "ts-node": "^10.1.0",
+    "tslib": "^2.3.0",
     "typescript": "^4.3.5",
     "webpack": "^5.47.0",
     "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "5.8.0"
   },
   "scripts": {
     "dev": "webpack serve --config webpack.development.js",

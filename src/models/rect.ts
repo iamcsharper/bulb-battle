@@ -1,3 +1,5 @@
+import { IVector2D } from "./vector2d";
+
 export interface IRect {
     x: number,
     y: number,
@@ -12,6 +14,15 @@ export class Rect implements IRect {
         public w: number,
         public h: number,
     ) {}
+
+    static checkPointInside(r: IRect, {x, y}: IVector2D) {
+        return !(
+            x < r.x || 
+            x > r.x + r.w ||
+            y < r.y ||
+            y > r.y + r.h
+        );
+    }
 
     static checkIntersects(r1: IRect, r2: IRect) {
         return !(r2.x > r1.x+r1.w || 

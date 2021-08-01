@@ -4,6 +4,7 @@ import {UIItem} from "../components/ui-item";
 import { Position } from "../components/position";
 import { GameStore } from "../models/game-store";
 import { ETags } from "../models/tags";
+import { drawPoint } from "../app/util";
 
 export class RenderUISystem extends System {
     readonly query = new Query({
@@ -13,10 +14,12 @@ export class RenderUISystem extends System {
     });
 
     ctx!: CanvasRenderingContext2D;
+    gameStore!: GameStore;
     toScreenCoords!: (x: number, y: number) => [number, number];
 
     setup(actions: ISystemActions): void | Promise<void> {
         this.ctx = actions.getResource(CanvasRenderingContext2D);
+        this.gameStore = actions.getResource(GameStore);
     }
 
     runs = 0;
@@ -24,7 +27,7 @@ export class RenderUISystem extends System {
     run(actions: ISystemActions) {
         this.ctx.textBaseline = 'top';
 
-        const gameStore = actions.getResource(GameStore);
+        this.ctx.save();
 
         this.query.execute(({pos, ui}) => {
             this.ctx.fillStyle = ui.active
@@ -36,30 +39,36 @@ export class RenderUISystem extends System {
             this.ctx.fillText(ui.finalCaption, pos.x, pos.y);
         });
 
+        this.ctx.restore();
+
+        this.ctx.font = '32px serif';
+        this.ctx.fillStyle = '#fff';
+
         this.ctx.fillText(
             `${
-                Math.floor(10*gameStore.timeSinceLevelLoaded)/10.0
+                Math.floor(10*this.gameStore.timeSinceLevelLoaded)/10.0
             } s.`,
             this.ctx.canvas.width - 200, 20
         );
 
         this.ctx.fillText(
             `${
-                Math.floor(gameStore.medianFps+0.5)
+                Math.floor(this.gameStore.medianFps+0.5)
             } FPS`,
             this.ctx.canvas.width - 200, 60
         );
 
         this.ctx.fillText(
-            `${gameStore.rendered} / ${gameStore.drawables}`,
+            `${this.gameStore.rendered} / ${this.gameStore.drawables}`,
             this.ctx.canvas.width - 200, 100
         );
-
-        let str = gameStore.input.actions.characterMovement.toString(2);
-        str = '0'.repeat(4 - str.length) + str;
-        this.ctx.fillText(
-            `${str}`,
-            this.ctx.canvas.width - 200, 140
-        )
+        {
+            let str =this.gameStore.input.actions.characterMovement.toString(2);
+            str = '0'.repeat(4 - str.length) + str;
+            this.ctx.fillText(
+                `${str}`,
+                this.ctx.canvas.width - 200, 140
+            )
+        }
     }
 }

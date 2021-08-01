@@ -8,21 +8,24 @@ import {Velocity} from "../components/velocity";
 import {load} from "../app/persistence";
 import {RenderUISystem} from "../systems/render-ui";
 import {RenderGameSystem} from "../systems/render-game";
-import {Shape} from "../components/shape";
+import {Shape, ShapePrimitive} from "../components/shape";
 import {PhysicsSystem} from "../systems/physics";
 import {UIItem} from "../components/ui-item";
 import {CollisionSystem} from "../systems/collision";
 import { CharacterSystem } from "../systems/character";
 import {savablePrefab} from "../prefabs/savable";
 import { ETags } from "../models/tags";
+import { PhysicsBridge } from "../components/physics-bridge";
+import { CameraSystem } from "../systems/camera";
 
 export class GameState extends State {
     _systems = [
+        PhysicsSystem,
+        CharacterSystem,
         CollisionSystem,
         InputSystem,
-        CharacterSystem,
+        CameraSystem,
         PauseSystem,
-        PhysicsSystem,
         RenderGameSystem,
         RenderUISystem,
     ];
@@ -52,6 +55,74 @@ export class GameState extends State {
             entity.getComponent(Shape)?.build();
         }
 
+        // init PhysicsBridge to real physics
+        const {
+            b2World,
+            b2CircleShape,
+            b2Shape,
+            b2PolygonShape,
+            b2BodyDef,
+            b2_dynamicBody,
+            b2Vec2,
+            destroy,
+        } = gameStore.physicsNamespace;
+
+        const physWorld = actions.getResource(b2World);
+
+        const zero = gameStore.physicsZero;
+
+        let physShape: Box2D.b2Shape | null = null;
+
+        for (const entity of actions.getEntities(new Query([
+            With(Shape),
+            With(Position),
+            With(PhysicsBridge)
+        ]))) {
+            const pos = entity.getComponent(Position)!;
+            const shape = entity.getComponent(Shape)!;
+            const physicsBridge = entity.getComponent(PhysicsBridge)!;
+
+            console.log('Adding to physics world:', pos, shape);
+
+            const vec = new b2Vec2(pos.x, pos.y);
+            const bd = new b2BodyDef();
+            
+            const {w, h} = shape.getBBox();
+
+            if (shape.primitive === ShapePrimitive.Rect) {
+                const _shape = new b2PolygonShape();
+                _shape.SetAsBox(w, h);
+                physShape = _shape;
+            } 
+            else if (shape.primitive === ShapePrimitive.Circle) {
+                const _shape = new b2CircleShape();
+                _shape.set_m_radius(shape.dimensions.x / 2);
+                physShape = _shape;
+            } else {
+                console.error(shape.primitive, 'is not supported by physics now');
+            }
+
+            if (physShape) {
+                bd.set_type(b2_dynamicBody);
+                bd.set_position(vec);
+
+                const body = physWorld.CreateBody(bd);
+                vec.Set(0, 0);
+                body.SetTransform(vec, 0);
+                body.CreateFixture(physShape, 1);
+
+                destroy(vec);
+                destroy(physShape);
+
+                body.SetLinearVelocity(zero);
+                // TODO: control via physics system?
+                body.SetAwake(true);
+                body.SetEnabled(true);
+
+                physicsBridge.bodyPtr = body;
+            }
+        }
+
         // actions.commands.queueCommand(() => setScoreCaptionMod(actions));
         actions.commands.maintain();
     }
@@ -64,6 +135,15 @@ export class GameState extends State {
         if (this.saveDataPrefabHandle) {
             actions.commands.unloadPrefab(this.saveDataPrefabHandle);
         }
+
+        const {
+            physicsNamespace: {
+                b2World,
+                destroy
+            }
+        } = actions.getResource(GameStore);
+
+        destroy(actions.getResource(b2World));
 
         actions.commands.maintain();
     }

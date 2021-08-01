@@ -7,4 +7,10 @@ module.exports = merge(common, {
   devServer: {
     contentBase: "./dist",
   },
+  resolve: {
+    fallback: { 
+      fs: false,
+      path: require.resolve("path-browserify")
+     }
+  }
 });

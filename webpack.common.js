@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const miniCss = require('mini-css-extract-plugin');
@@ -55,6 +56,18 @@ module.exports = {
       title: "Webpack Output",
       template: path.join(__dirname, './src/index.html'),
       inject: false,
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: './node_modules/box2d-wasm/dist/es/Box2D.js',
+          to: './Box2D.js'
+        },
+        {
+          from: './node_modules/box2d-wasm/dist/es/Box2D.wasm',
+          to: './Box2D.wasm'
+        },
+      ]
     }),
     new miniCss({
       filename: 'style.css',

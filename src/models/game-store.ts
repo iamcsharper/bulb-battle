@@ -1,5 +1,7 @@
-import { EKeyState } from '../systems/input'
+import { EKeyState, EMouseState } from '../systems/input'
 import {IState} from "sim-ecs";
+import { _Box2D } from '../server';
+import { IVector2D } from './vector2d';
 
 export enum EMovement {
     idle  = 0, // 0000
@@ -14,6 +16,8 @@ export class GameStore {
     rendered = 0
 
     debugShapes = true
+    wasBlurred = false
+    wasIntentionallyPaused = false
     continue = false
     currentState?: IState
     lastFrameDeltaTime = 0
@@ -27,9 +31,11 @@ export class GameStore {
             togglePause: boolean
             menuMovement: EMovement
         }
-        keyStates: {
-            [key: string]: EKeyState | undefined
-        }
+        wheel: number
+        cursorPos: IVector2D
+        cursorPosWorld: IVector2D
+        keyStates: Map<string, EKeyState>
+        mouseStates: Map<number, EMouseState>
     } = {
         actions: {
             characterMovement: EMovement.idle,
@@ -37,6 +43,14 @@ export class GameStore {
             menuMovement: EMovement.idle,
             togglePause: false,
         },
-        keyStates: {},
+        wheel: 0,
+        cursorPos: {x:-1, y:-1},
+        cursorPosWorld: {x:-1, y:-1},
+        keyStates: new Map<string, EKeyState>(),
+        mouseStates: new Map<number, EMouseState>(),
     }
+    physicsNamespace!: _Box2D;
+    physicsZero!: Box2D.b2Vec2;
+    screenToWorld?: DOMMatrix;
+    worldToScreen?: DOMMatrix;
 }

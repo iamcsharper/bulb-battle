@@ -1,6 +1,7 @@
 import { IWorld } from "sim-ecs";
 import { prepareRenderContext } from "..";
 import { beforeFrameHandler } from "../app/frame-transition-handlers";
+import { _Box2D } from "../server";
 import { MenuState } from "../states/menu";
 
 export interface ILevel {
@@ -26,7 +27,10 @@ export abstract class Level implements ILevel {
 
     public world: IWorld;
 
-    constructor(public name: string) {
+    constructor(
+        public physics: _Box2D,
+        public name: string,
+    ) {
         console.log('Level loaded', name);
         const world = this.createWorld();
 

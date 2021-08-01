@@ -1,4 +1,4 @@
-import {Shape, ShapePrimitive} from "../components/shape";
+import {Shape, ShapePivot, ShapePrimitive} from "../components/shape";
 import {Collision} from "../components/collision";
 import { Material } from "../components/material";
 import { Position } from "../components/position";
@@ -14,11 +14,14 @@ export const gamePrefab = [
     {
         Collision: <Collision>{},
         Position: <Position>{
-            x: 60,
-            y: 60,
+            x: 0,
+            y: 0,
+        },
+        Rotation: <Rotation>{
+            value: 0
         },
         Velocity: <Velocity>{
-            x: 0,
+            x: 1.5,
             y: 0, 
         },
         Material: <Material>{
@@ -26,23 +29,24 @@ export const gamePrefab = [
         },
         Shape: <Shape>{
             dimensions: <Vector2D>{
-                x: 10,
-                y: 10,
+                x: 2,
+                y: 0.7,
             },
+            pivot: ShapePivot.TopLeft,
             primitive: ShapePrimitive.Rect,
         },
-        Rotation: <Rotation>{
-            value: Math.PI * 3 / 4
-        }
     },
     {
         Collision: <Collision>{},
         Position: <Position>{
-            x: 30,
-            y: 100,
+            x: 1,
+            y: 3,
+        },
+        Rotation: <Rotation>{
+            value: 0
         },
         Velocity: <Velocity>{
-            x: 10,
+            x: 2,
             y: 0, 
         },
         Material: <Material>{
@@ -50,8 +54,9 @@ export const gamePrefab = [
         },
         Shape: <Shape>{
             zIndex: 10,
+            pivot: ShapePivot.TopLeft,
             dimensions: <Vector2D>{
-                x: 20,
+                x: 0.7,
             },
             primitive: ShapePrimitive.Circle,
         },
@@ -59,34 +64,38 @@ export const gamePrefab = [
     {
         Collision: <Collision>{},
         Position: <Position>{
-            x: 100,
-            y: 50,
+            x: 18,
+            y: 0,
+        },
+        Rotation: <Rotation>{
+            value: 7 * Math.PI / 4
         },
         Velocity: <Velocity>{
             x: 0,
             y: 0, 
         },
         Material: <Material>{
-            color: '#fdff03'
+            color: '#0bb'
         },
         Shape: <Shape>{
+            pivot: ShapePivot.Middle,
             mesh: <Mesh>{
                 verticies: [
                     {
-                        x: -10,
-                        y: -10
+                        x: -3,
+                        y: -1.25
                     },
                     {
-                        x: 10,
-                        y: -10,
+                        x: 0.31,
+                        y: -0.31,
                     },
                     {
                         x: 0,
-                        y: 10
+                        y: 0.31
                     },
                     {
-                        x: -5,
-                        y: 100
+                        x: -1.6,
+                        y: 3
                     }
                 ]
             },

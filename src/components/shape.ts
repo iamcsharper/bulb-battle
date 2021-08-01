@@ -20,6 +20,20 @@ export enum ShapePivot {
     BottomRight = 8
 }
 
+export const ShapePivotNames:{
+    [key in ShapePivot]: string;
+} = {
+    [ShapePivot.TopLeft]: 'TopLeft',
+    [ShapePivot.TopMiddle]: 'TopMiddle',
+    [ShapePivot.TopRight]: 'TopRight',
+    [ShapePivot.Left]: 'Left',
+    [ShapePivot.Middle]: 'Middle',
+    [ShapePivot.Right]: 'Right',
+    [ShapePivot.BottomLeft]: 'BottomLeft',
+    [ShapePivot.BottomMiddle]: 'BottomMiddle',
+    [ShapePivot.BottomRight]: 'BottomRight',
+}
+
 // todo triangle, capsule
 
 export class Shape {
@@ -37,6 +51,8 @@ export class Shape {
         public zIndex = 0,
         // TODO: make it real
         public pivot = ShapePivot.Middle,
+        public offsetX = 0,
+        public offsetY = 0,
         public dimensions: Vector2D = vecZero,
         public primitive: ShapePrimitive = ShapePrimitive.Rect,
         public mesh: Mesh | null = null,
@@ -47,7 +63,6 @@ export class Shape {
     build() {
         if (this.isBuilt) return;
 
-        console.log('Building shape', this);
         if (this.primitive === ShapePrimitive.Mesh && !this.mesh) {
             throw new Error('Shapes with mesh primitive\
                 must provide a mesh data');
@@ -59,6 +74,10 @@ export class Shape {
             throw new Error('Shapes with non-mesh primitive\
                 must provide dimensions')
         }
+
+        // All the shapes are cenetered by default
+
+        let minX = 0, minY = 0, maxX = 0, maxY = 0;
 
         if (this.primitive === ShapePrimitive.Circle) {
             // A center-positioned circle
@@ -73,16 +92,16 @@ export class Shape {
         } else if (this.primitive === ShapePrimitive.Rect) {
             // a top-left positioned rectangle
             // is the bounding box itself
-            this.bBox.x = 0;
-            this.bBox.y = 0;
+            this.bBox.x = -this.dimensions.x/2;
+            this.bBox.y = -this.dimensions.y/2;
             this.bBox.w = this.dimensions.x;
             this.bBox.h = this.dimensions.y;
         } else if (this.primitive === ShapePrimitive.Mesh && this.mesh) {
-            let minX = this.mesh.verticies[0].x;
-            let minY = this.mesh.verticies[0].y;
+            minX = this.mesh.verticies[0].x;
+            minY = this.mesh.verticies[0].y;
 
-            let maxX = this.mesh.verticies[0].x;
-            let maxY = this.mesh.verticies[0].y;
+            maxX = this.mesh.verticies[0].x;
+            maxY = this.mesh.verticies[0].y;
 
             for (let i=1;i<this.mesh.verticies.length;++i){
                 const {x, y} = this.mesh.verticies[i];
@@ -92,10 +111,39 @@ export class Shape {
                 if (y > maxY) maxY = y;
             }
 
-            this.bBox.x = minX;
-            this.bBox.y = minY;
             this.bBox.w = maxX - minX;
             this.bBox.h = maxY - minY;
+            this.bBox.x = -this.bBox.w/2;
+            this.bBox.y = -this.bBox.h/2;
+        }
+
+        if (this.pivot === ShapePivot.TopLeft) {
+            this.bBox.x += this.bBox.w/2;
+            this.bBox.y += this.bBox.h/2;
+        } else if (this.pivot === ShapePivot.TopMiddle) {
+            this.bBox.y += this.bBox.h/2;
+        } else if (this.pivot === ShapePivot.TopRight) {
+            this.bBox.x -= this.bBox.w/2;
+            this.bBox.y += this.bBox.h/2;
+        } else if (this.pivot === ShapePivot.Left) {
+            this.bBox.x += this.bBox.w/2;
+        } else if (this.pivot === ShapePivot.Right) {
+            this.bBox.x -= this.bBox.w/2;
+        } else if (this.pivot === ShapePivot.BottomLeft) {
+            this.bBox.x += this.bBox.w/2;
+            this.bBox.y -= this.bBox.h/2;
+        } else if (this.pivot === ShapePivot.BottomMiddle) {
+            this.bBox.y -= this.bBox.h/2;
+        } else if (this.pivot === ShapePivot.BottomRight) {
+            this.bBox.x -= this.bBox.w/2;
+            this.bBox.y -= this.bBox.h/2;
+        }
+
+        if (this.primitive === ShapePrimitive.Mesh && this.mesh) {
+            for (let i=0;i<this.mesh.verticies.length;++i){
+                this.mesh.verticies[i].x += (this.bBox.x - minX);
+                this.mesh.verticies[i].y += (this.bBox.y - minY);
+            }
         }
 
         this.isBuilt = true;

@@ -1,5 +1,6 @@
 import {GameStore} from "../models/game-store";
 import {ITransitionActions} from "sim-ecs";
+import { PauseState } from "../states/pause";
 
 // generate timestamp or delta
 // see http://nodejs.org/api/process.html#process_process_hrtime
@@ -28,23 +29,27 @@ let lastTransition = hrtime();
 let deltaSum = 0;
 
 export async function beforeFrameHandler(actions: ITransitionActions) {
-     // Update delta time
     const gameStore = actions.getResource(GameStore);
-    gameStore.lastFrameDeltaTime = hrtimeToSeconds(
-      hrtime(lastTransition)
-    );
 
-    if (gameStore.lastFrameDeltaTime > 0.1) {
-      gameStore.lastFrameDeltaTime = 0.1;
+    const isPauseState = gameStore.currentState?.constructor == PauseState;
+
+    if (!isPauseState) {
+      gameStore.lastFrameDeltaTime = hrtimeToSeconds(
+        hrtime(lastTransition)
+      );
+  
+      if (gameStore.lastFrameDeltaTime > 0.1) {
+        gameStore.lastFrameDeltaTime = 0.1;
+      }
+  
+      gameStore.timeSinceLevelLoaded += 
+        gameStore.lastFrameDeltaTime; 
+  
+      deltaSum += gameStore.lastFrameDeltaTime;
+      gameStore.medianFps = ++gameStore.ticks / deltaSum;
+  
+      lastTransition = hrtime();  
     }
-
-    gameStore.timeSinceLevelLoaded += 
-      gameStore.lastFrameDeltaTime; 
-
-    deltaSum += gameStore.lastFrameDeltaTime;
-    gameStore.medianFps = ++gameStore.ticks / deltaSum;
-
-    lastTransition = hrtime();
 
     // Clear canvas
     const ctx = actions.getResource(CanvasRenderingContext2D);
