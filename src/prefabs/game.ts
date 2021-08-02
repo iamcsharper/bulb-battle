@@ -8,10 +8,12 @@ import { Mesh } from "../components/mesh";
 import { Rotation } from "../components/rotation";
 import { CTagMarker } from "sim-ecs";
 import { ETags } from "../models/tags";
+import { PhysicsBridge } from "../components/physics-bridge";
 
 // This could also be pure JSON, but in order to use TS types and have static checks it is recommended to write it as TS array.
 export const gamePrefab = [
     {
+        PhysicsBridge: <PhysicsBridge>{},
         Collision: <Collision>{},
         Position: <Position>{
             x: 0,
@@ -21,7 +23,7 @@ export const gamePrefab = [
             value: 0
         },
         Velocity: <Velocity>{
-            x: 1.5,
+            x: 0,
             y: 0, 
         },
         Material: <Material>{
