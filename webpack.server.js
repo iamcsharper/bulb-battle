@@ -1,8 +1,7 @@
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const miniCss = require('mini-css-extract-plugin');
+
 
 module.exports = {
   entry: './src/index.ts',
@@ -18,14 +17,6 @@ module.exports = {
       {
         test: /\.(png|svg|jpg|jpeg|gif|wav|mp4)$/i,
         use: ['file-loader'],
-      },
-      {
-        test:/\.(s*)css$/,
-        use: [
-          miniCss.loader,
-          'css-loader',
-          'sass-loader',
-        ]
       },
       {
         test: /\.js$/,
@@ -44,10 +35,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    fallback: { 
-      fs: false,
-      path: require.resolve("path-browserify")
-    }
   },
   optimization: {
     splitChunks: {
@@ -56,11 +43,6 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      title: "Webpack Output",
-      template: path.join(__dirname, './src/index.html'),
-      inject: false,
-    }),
     new CopyPlugin({
       patterns: [
         {
@@ -69,12 +51,9 @@ module.exports = {
         },
         {
           from: './node_modules/box2d-wasm/dist/es/Box2D.wasm',
-          to: './Box2D.wasm',
+          to: './Box2D.wasm'
         },
       ]
-    }),
-    new miniCss({
-      filename: 'style.css',
     }),
   ],
 };

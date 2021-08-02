@@ -4,6 +4,18 @@ import { Topdown } from './levels/topdown';
 import './scss/app.scss';
 import { loadPhysics, _Box2D } from './server';
 
+const _fetch = window.fetch;
+
+window.fetch = (
+    input: RequestInfo,
+    init?: RequestInit | undefined): Promise<Response> => {
+    if (init?.credentials === 'same-origin') {
+        delete init.credentials;
+    }
+    console.log(input, init);
+    return _fetch(input, init);
+}
+
 export const prepareRenderContext = () => {
     const canvasEle = document.querySelector('canvas');
     if (!canvasEle) throw new Error('Could not find canvas element!');
