@@ -63,9 +63,10 @@ export class Shape {
     build() {
         if (this.isBuilt) return;
 
-        if (this.primitive === ShapePrimitive.Mesh && !this.mesh) {
-            throw new Error('Shapes with mesh primitive\
-                must provide a mesh data');
+        if (this.primitive === ShapePrimitive.Mesh) {
+            if (!this.mesh || !this.mesh.verticies.length)
+                throw new Error('Shapes with mesh primitive\
+                must provide a non-empty mesh data');
         }
         if (this.primitive !== ShapePrimitive.Mesh && !this.dimensions) {
             console.error('dimensions:', this.dimensions,

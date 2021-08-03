@@ -1,13 +1,14 @@
 import {ETags} from "../models/tags";
-import {Collision} from "../components/collision";
-import {Shape, ShapePivot, ShapePrimitive} from "../components/shape";
-import {Velocity} from "../components/velocity";
 import {CTagMarker} from 'sim-ecs';
-import { Position } from "../components/position";
-import { Material } from "../components/material";
+import { verticies } from "../../res/meshes/1";
 import { Character } from "../components/character";
-import { Rotation } from "../components/rotation";
-import { PhysicsBridge } from "../components/physics-bridge";
+import { Collision } from "../engine/components/collision";
+import { Material } from "../engine/components/material";
+import { Mesh } from "../engine/components/mesh";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape, ShapePrimitive, ShapePivot } from "../engine/components/shape";
+import { Velocity } from "../engine/components/velocity";
 
 export const savablePrefab = [
     { // Character
@@ -37,8 +38,11 @@ export const savablePrefab = [
             dimensions: {
                 x: 1,
             },
+            mesh: <Mesh>{
+                verticies
+            },
+            primitive: ShapePrimitive.Mesh,
             pivot: ShapePivot.Middle,
-            primitive: ShapePrimitive.Circle
         },
         Material: <Material>{
             color: '#cca',

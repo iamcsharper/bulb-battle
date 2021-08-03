@@ -1,12 +1,13 @@
 import {ITransitionActions, SerialFormat, State, TGroupHandle} from "sim-ecs";
 import {menuPrefab} from "../prefabs/menu";
-import {InputSystem} from "../systems/input";
 import {MenuSystem} from "../systems/menu";
 import {RenderUISystem} from "../systems/render-ui";
 import {GameStore} from "../models/game-store";
+import { InputSystem } from "../engine/systems/input";
+import { ActionsSystem } from "../systems/actions";
 
 export class MenuState extends State {
-    _systems = [InputSystem, MenuSystem, RenderUISystem];
+    _systems = [InputSystem, ActionsSystem, MenuSystem, RenderUISystem];
     prefabHandle!: TGroupHandle;
 
     activate(actions: ITransitionActions) {

@@ -1,14 +1,13 @@
-import {Shape, ShapePivot, ShapePrimitive} from "../components/shape";
-import {Collision} from "../components/collision";
-import { Material } from "../components/material";
-import { Position } from "../components/position";
-import { Velocity } from "../components/velocity";
-import { Vector2D } from "../models/vector2d";
-import { Mesh } from "../components/mesh";
-import { Rotation } from "../components/rotation";
 import { CTagMarker } from "sim-ecs";
+import { Collision } from "../engine/components/collision";
+import { Material } from "../engine/components/material";
+import { PhysicsBridge } from "../engine/components/physics-bridge";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape, ShapePivot, ShapePrimitive } from "../engine/components/shape";
+import { Velocity } from "../engine/components/velocity";
+import { Vector2D } from "../engine/models/vector2d";
 import { ETags } from "../models/tags";
-import { PhysicsBridge } from "../components/physics-bridge";
 
 // This could also be pure JSON, but in order to use TS types and have static checks it is recommended to write it as TS array.
 export const gamePrefab = [
@@ -78,30 +77,6 @@ export const gamePrefab = [
         },
         Material: <Material>{
             color: '#0bb'
-        },
-        Shape: <Shape>{
-            pivot: ShapePivot.Middle,
-            mesh: <Mesh>{
-                verticies: [
-                    {
-                        x: -3,
-                        y: -1.25
-                    },
-                    {
-                        x: 0.31,
-                        y: -0.31,
-                    },
-                    {
-                        x: 0,
-                        y: 0.31
-                    },
-                    {
-                        x: -1.6,
-                        y: 3
-                    }
-                ]
-            },
-            primitive: ShapePrimitive.Mesh,
         },
     },
 ];

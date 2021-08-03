@@ -1,9 +1,10 @@
 import {ISystemActions, Query, System, Write} from "sim-ecs";
 import {UIItem} from "../components/ui-item";
-import {EMovement, GameStore} from "../models/game-store";
+import {GameStore} from "../models/game-store";
 import {EActions} from "../app/actions";
 import {GameState} from "../states/game";
 import { MenuState } from "../states/menu";
+import { EMovement } from "../engine/models/movement";
 
 export class MenuSystem extends System {
     readonly _states = [
@@ -27,7 +28,7 @@ export class MenuSystem extends System {
 
     run(actions: ISystemActions) {
         // todo: use index
-        if (this.gameStore.input.actions.menuMovement == EMovement.down) {
+        if (this.gameStore.actions.menuMovement == EMovement.down) {
             switch (this.menuAction) {
                 case EActions.Play: this.menuAction = EActions.Continue; break;
                 case EActions.Continue: this.menuAction = EActions.Exit; break;
@@ -37,7 +38,7 @@ export class MenuSystem extends System {
                 }
             }
         }
-        else if (this.gameStore.input.actions.menuMovement == EMovement.up) {
+        else if (this.gameStore.actions.menuMovement == EMovement.up) {
             switch (this.menuAction) {
                 case EActions.Play: this.menuAction = EActions.Exit; break;
                 case EActions.Continue: this.menuAction = EActions.Play; break;
@@ -48,7 +49,7 @@ export class MenuSystem extends System {
             }
         }
 
-        if (this.gameStore.input.actions.menuConfirm) {
+        if (this.gameStore.actions.menuConfirm) {
             if (this.menuAction == EActions.Play) {
                 this.actions.commands.pushState(GameState);
             }

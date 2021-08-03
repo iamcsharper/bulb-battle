@@ -1,8 +1,7 @@
-import { IWorld } from "sim-ecs";
-import { prepareRenderContext } from "..";
+import { IWorld, TStateProto } from "sim-ecs";
+import { updateRenderContext } from "./";
 import { beforeFrameHandler } from "../app/frame-transition-handlers";
-import { _Box2D } from "../server";
-import { MenuState } from "../states/menu";
+import { _Box2D } from "./server";
 
 export interface ILevel {
     name: string;
@@ -27,21 +26,22 @@ export abstract class Level implements ILevel {
 
     public world: IWorld;
 
+    readonly initialState?: TStateProto;
+
     constructor(
         public physics: _Box2D,
         public name: string,
     ) {
-        console.log('Level loaded', name);
         const world = this.createWorld();
 
         if (!world) {
-            throw new Error('A level must have a non-null \
-            resuling createWorld function');
+            throw new Error(`The level ${name} must have a non-null \
+            resulting createWorld function`);
         }
 
         this.world = world;
 
-        const renderContext = prepareRenderContext();
+        const renderContext = updateRenderContext();
 
         this.world.addResource(renderContext);
     }
@@ -59,7 +59,7 @@ export abstract class Level implements ILevel {
     async run() {
         return this.world.run({
             beforeStepHandler: beforeFrameHandler,
-            initialState: MenuState,
+            initialState: this.initialState,
         }).then(()=>this.destroy());
     }
 }

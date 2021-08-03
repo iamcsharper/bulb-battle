@@ -1,12 +1,13 @@
 import {ISystemActions, Query, Read, System, Write} from "sim-ecs";
-import {Shape, ShapePivotNames, ShapePrimitive} from "../components/shape";
-import { Position } from "../components/position";
-import { Material } from "../components/material";
+import { Material } from "../engine/components/material";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape, ShapePrimitive, ShapePivotNames } from "../engine/components/shape";
+import { Camera } from "../engine/models/camera";
+import { CommonStore } from "../engine/models/common-store";
+import { IRect, Rect } from "../engine/models/rect";
+import { PIXELS_PER_METER, TWOPI, drawPoint } from "../engine/util";
 import { GameStore } from "../models/game-store";
-import { IRect, Rect } from "../models/rect";
-import { Camera } from "../models/camera";
-import { Rotation } from "../components/rotation";
-import { drawPoint, PIXELS_PER_METER, TWOPI } from "../app/util";
 
 export class RenderGameSystem extends System {
     readonly query = new Query({
@@ -18,6 +19,7 @@ export class RenderGameSystem extends System {
 
     ctx!: CanvasRenderingContext2D;
     gameStore!: GameStore;
+    commonStore!: CommonStore;
     camera!: Camera;
 
     // TODO: remove
@@ -26,6 +28,7 @@ export class RenderGameSystem extends System {
     setup(actions: ISystemActions): void | Promise<void> {
         this.ctx = actions.getResource(CanvasRenderingContext2D);
         this.gameStore = actions.getResource(GameStore);
+        this.commonStore = actions.getResource(CommonStore);
         this.camera = actions.getResource(Camera);
 
         this.controls = document.querySelector('#controls')!;
@@ -64,41 +67,19 @@ export class RenderGameSystem extends System {
             -this.camera.y
         );
 
-        this.gameStore.worldToScreen = this.ctx.getTransform();
-        this.gameStore.screenToWorld = this.ctx.getTransform().inverse();
+        this.commonStore.worldToScreen = this.ctx.getTransform();
+        this.commonStore.screenToWorld = this.ctx.getTransform().inverse();
 
         //mx,my - cursor coords in Screen space
         const {
             x:mx, y:my
-        } = this.gameStore.input.cursorPos;
+        } = this.commonStore.input.cursorPos;
 
         // transform matrix significat values
-        const {
-            a,b,c,d,e,f
-        } = this.gameStore.screenToWorld;
-
-        // a c e  x  a*x + c*y + e*z
-        // b d f  y  b*x + d*y + f*z
-        // 0 0 1  z  ?
+        
 
         // cursor coords in world space
-        this.gameStore.input.cursorPosWorld.x = a*mx + c*my + e;
-        this.gameStore.input.cursorPosWorld.y = b*mx + d*my + f;
-
-        // const {
-        //     x:newX,
-        //     y:newY
-        // } = this.gameStore.input.cursorPosWorld;
-
-        // // Draws a cursor point in world space 
-        // drawPoint(this.ctx, 
-        //     newX,
-        //     newY, 
-        //     1);
-
-        // this.ctx.font = '0.5px Arial';
-        // this.ctx.fillText(`${Math.floor(newX*1e3)*1e-3}, 
-        // ${Math.floor(newY*1e3)*1e-3}`, newX, newY - 0.8);
+        
 
         const rows = 10;
         const cols = 18;
@@ -120,7 +101,7 @@ export class RenderGameSystem extends System {
 
         const iter = Array.from(this.query.iter());
 
-        this.gameStore.drawables = iter.length;
+        this.commonStore.drawables = iter.length;
 
         const drawables = iter.filter(
             ({pos, shape}) => {
@@ -140,12 +121,12 @@ export class RenderGameSystem extends System {
             return a.zIndex - b.zIndex;
         });
 
-        this.gameStore.rendered = drawables.length;
+        this.commonStore.rendered = drawables.length;
 
         for (let i = 0; i < drawables.length; i++) {
             const {pos, shape, rot, material} = drawables[i];
             
-            this.drawShape(pos, shape, material, rot);
+            this.drawShape(pos, shape, material, rot as Rotation);
         }
 
         this.ctx.restore();
@@ -200,7 +181,7 @@ export class RenderGameSystem extends System {
             this.ctx.fill();
         }
 
-        if (this.gameStore.debugShapes) {
+        if (this.commonStore.debugShapes) {
             this.ctx.save();
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '0.1rem Arial';

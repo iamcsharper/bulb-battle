@@ -1,22 +1,22 @@
 import {ITransitionActions, Query, SerialFormat, State, TGroupHandle, With, WithTag} from "sim-ecs";
-import {InputSystem} from "../systems/input";
-import {PauseSystem} from "../systems/pause";
-import {gamePrefab} from "../prefabs/game";
-import {Position} from "../components/position";
-import {GameStore} from "../models/game-store";
-import {Velocity} from "../components/velocity";
-import {load} from "../app/persistence";
-import {RenderUISystem} from "../systems/render-ui";
-import {RenderGameSystem} from "../systems/render-game";
-import {Shape, ShapePrimitive} from "../components/shape";
-import {PhysicsSystem} from "../systems/physics";
-import {UIItem} from "../components/ui-item";
-import {CollisionSystem} from "../systems/collision";
+import { load } from "../app/persistence";
+import { PhysicsBridge } from "../engine/components/physics-bridge";
+import { Position } from "../engine/components/position";
+import { Shape, ShapePrimitive } from "../engine/components/shape";
+import { CommonStore } from "../engine/models/common-store";
+import { CameraSystem } from "../engine/systems/camera";
+import { CollisionSystem } from "../engine/systems/collision";
+import { GcSystem } from "../engine/systems/gc";
+import { InputSystem } from "../engine/systems/input";
+import { PhysicsSystem } from "../engine/systems/physics";
+import { GameStore } from "../models/game-store";
+import { gamePrefab } from "../prefabs/game";
+import { savablePrefab } from "../prefabs/savable";
+import { ActionsSystem } from "../systems/actions";
 import { CharacterSystem } from "../systems/character";
-import {savablePrefab} from "../prefabs/savable";
-import { ETags } from "../models/tags";
-import { PhysicsBridge } from "../components/physics-bridge";
-import { CameraSystem } from "../systems/camera";
+import { PauseSystem } from "../systems/pause";
+import { RenderGameSystem } from "../systems/render-game";
+import { RenderUISystem } from "../systems/render-ui";
 
 export class GameState extends State {
     _systems = [
@@ -28,20 +28,26 @@ export class GameState extends State {
         PauseSystem,
         RenderGameSystem,
         RenderUISystem,
+        GcSystem,
+        ActionsSystem,
     ];
     saveDataPrefabHandle?: TGroupHandle;
     staticDataPrefabHandle?: TGroupHandle;
+
+    gameStore!: GameStore;
+    commonStore!: CommonStore;
 
     activate(actions: ITransitionActions) {
         actions.getResource(GameStore).currentState = this;
     }
 
     async create(actions: ITransitionActions) {
-        const gameStore = actions.getResource(GameStore);
+        this.commonStore = actions.getResource(CommonStore);
+        this.gameStore = actions.getResource(GameStore)
 
         this.staticDataPrefabHandle = createNewGame(actions);
 
-        if (gameStore.continue) {
+        if (this.gameStore.continue) {
             this.saveDataPrefabHandle = load(actions);
         } else {
             this.saveDataPrefabHandle = createGameFromSaveData(actions);
@@ -65,11 +71,11 @@ export class GameState extends State {
             b2_dynamicBody,
             b2Vec2,
             destroy,
-        } = gameStore.physicsNamespace;
+        } = this.commonStore.physicsNamespace;
 
         const physWorld = actions.getResource(b2World);
 
-        const zero = gameStore.physicsZero;
+        const zero = this.commonStore.physicsZero;
 
         let physShape: Box2D.b2Shape | null = null;
 
@@ -141,7 +147,7 @@ export class GameState extends State {
                 b2World,
                 destroy
             }
-        } = actions.getResource(GameStore);
+        } = this.commonStore;
 
         destroy(actions.getResource(b2World));
 
@@ -158,18 +164,3 @@ const createGameFromSaveData = function (actions: ITransitionActions) {
     return actions.commands.load(
         SerialFormat.fromArray(savablePrefab));
 };
-
-// const setScoreCaptionMod = function (actions: ITransitionActions) {
-//     const score = actions.getResource(ScoreBoard);
-
-//     for (const entity of actions.getEntities(new Query([With(Paddle), With(UIItem)]))) {
-//         const ui = entity.getComponent(UIItem)!;
-//         const paddle = entity.getComponent(Paddle)!;
-
-//         if (paddle.side == EPaddleSide.Left) {
-//             ui.captionMod = strIn => strIn.replace('{}', score.left.toString());
-//         } else {
-//             ui.captionMod = strIn => strIn.replace('{}', score.right.toString());
-//         }
-//     }
-// };

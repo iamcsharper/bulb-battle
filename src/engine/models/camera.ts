@@ -10,6 +10,7 @@ export enum CameraFollowMethod {
 
 export interface CameraFollow {
     target: IVector2D
+    targetAngle?: number
     method: CameraFollowMethod
     prevX: number
     prevY: number

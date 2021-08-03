@@ -1,12 +1,7 @@
 import { _Box2D } from "../server";
-import {ISystemActions, ReadEntity, Query, Read, System, Write} from "sim-ecs";
-import { Position } from "../components/position";
-import { Rotation } from "../components/rotation";
-import {Velocity} from "../components/velocity";
-import { GameStore } from "../models/game-store";
-import { PhysicsBridge } from "../components/physics-bridge";
+import {ISystemActions, System} from "sim-ecs";
 import { Camera, CameraFollowMethod } from "../models/camera";
-import { lerp, PIXELS_PER_METER } from "../app/util";
+import { angleLerp, lerp, PIXELS_PER_METER } from "../util";
 
 export class CameraSystem extends System {
     camera!: Camera;
@@ -41,6 +36,7 @@ export class CameraSystem extends System {
         if (!follow) return;
 
         const {
+            targetAngle,
             target,
             method,
         } = follow;
@@ -48,8 +44,12 @@ export class CameraSystem extends System {
         let tx = target.x;
         let ty = target.y;
 
-        offset.x = -this.ctx.canvas.width / (2*this.camera.zoom*PIXELS_PER_METER);;
-        offset.y = -this.ctx.canvas.height / (2*this.camera.zoom*PIXELS_PER_METER);
+        offset.x = -this.ctx.canvas.width / (2*PIXELS_PER_METER * this.camera.zoom);
+        offset.y = -this.ctx.canvas.height / (2*PIXELS_PER_METER * this.camera.zoom);
+
+        if (targetAngle !== undefined) {
+            this.camera.rotation = angleLerp(this.camera.rotation, -targetAngle, 0.01);
+        }
 
         if (method === CameraFollowMethod.Immediate) {
             this.camera.x = tx;

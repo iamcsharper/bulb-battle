@@ -1,29 +1,35 @@
 import { ECS, IWorld } from "sim-ecs";
 import { Character } from "../components/character";
-import { Collision } from "../components/collision";
-import { Material } from "../components/material";
-import { Mesh } from "../components/mesh";
-import { PhysicsBridge } from "../components/physics-bridge";
-import { Position } from "../components/position";
-import { Rotation } from "../components/rotation";
-import { Shape } from "../components/shape";
 import { UIItem } from "../components/ui-item";
-import { Velocity } from "../components/velocity";
-import { Camera } from "../models/camera";
+import { Collision } from "../engine/components/collision";
+import { Material } from "../engine/components/material";
+import { Mesh } from "../engine/components/mesh";
+import { PhysicsBridge } from "../engine/components/physics-bridge";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape } from "../engine/components/shape";
+import { Velocity } from "../engine/components/velocity";
+import { Level } from "../engine/level.h";
+import { Camera } from "../engine/models/camera";
+import { CommonStore } from "../engine/models/common-store";
+import { _Box2D } from "../engine/server";
+import { CameraSystem } from "../engine/systems/camera";
+import { CollisionSystem } from "../engine/systems/collision";
+import { GcSystem } from "../engine/systems/gc";
+import { InputSystem } from "../engine/systems/input";
+import { PhysicsSystem } from "../engine/systems/physics";
 import { GameStore } from "../models/game-store";
-import { _Box2D } from "../server";
-import { CameraSystem } from "../systems/camera";
+import { MenuState } from "../states/menu";
+import { ActionsSystem } from "../systems/actions";
 import { CharacterSystem } from "../systems/character";
-import { CollisionSystem } from "../systems/collision";
-import { InputSystem } from "../systems/input";
 import { MenuSystem } from "../systems/menu";
 import { PauseSystem } from "../systems/pause";
-import { PhysicsSystem } from "../systems/physics";
 import { RenderGameSystem } from "../systems/render-game";
 import { RenderUISystem } from "../systems/render-ui";
-import { Level } from "./level.h";
 
 export class Topdown extends Level {
+    readonly initialState = MenuState;
+
     constructor(physics: _Box2D) {
         super(physics, 'topdown');
 
@@ -39,11 +45,13 @@ export class Topdown extends Level {
         const zero = new b2Vec2(0, 0);
 
         const gameStore = new GameStore();
-        gameStore.physicsNamespace = physics;
-        gameStore.physicsZero = zero;
-
         const camera = new Camera();
 
+        const commonStore = new CommonStore();
+        commonStore.physicsNamespace = physics;
+        commonStore.physicsZero = zero;
+
+        this.world.addResource(commonStore);
         this.world.addResource(gameStore);
         this.world.addResource(camera);
     }
@@ -54,7 +62,7 @@ export class Topdown extends Level {
         const {
             physicsNamespace,
             physicsZero
-        } = this.world.getResource(GameStore);
+        } = this.world.getResource(CommonStore);
         const physicsWorld = this.world.getResource(physicsNamespace.b2World);
 
         physicsNamespace.destroy(physicsWorld);
@@ -81,9 +89,12 @@ export class Topdown extends Level {
             .withSystem(CollisionSystem, [
                 // NetworkSystem
             ])
+            .withSystem(ActionsSystem, [
+                PauseSystem
+            ])
             .withSystem(InputSystem)
             .withSystem(MenuSystem, [
-                InputSystem
+                InputSystem,
             ])
             .withSystem(PauseSystem, [
                 InputSystem
@@ -92,6 +103,9 @@ export class Topdown extends Level {
                 PhysicsSystem,
                 CharacterSystem,
                 // NetworkSystem,
+            ])
+            .withSystem(GcSystem, [
+                RenderGameSystem,
             ])
             .withSystem(RenderUISystem, [
                 PhysicsSystem,

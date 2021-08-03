@@ -1,28 +1,32 @@
-import {CTagMarker, ISystemActions, Query, Read, ReadEntity, System, With, WithTag, Write} from "sim-ecs";
-import {Shape} from "../components/shape";
-import {Collision} from "../components/collision";
-import { Vector2D } from "../models/vector2d";
+import { CODE_E, CODE_Q } from "keycode-js";
+import {ISystemActions, Query, Read, ReadEntity, System, WithTag, Write} from "sim-ecs";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Velocity } from "../engine/components/velocity";
+import { Camera, CameraFollowMethod } from "../engine/models/camera";
+import { CommonStore } from "../engine/models/common-store";
+import { EMovement } from "../engine/models/movement";
+import { EKeyState } from "../engine/systems/input";
+import { GameStore } from "../models/game-store";
 import { ETags } from "../models/tags";
-import { Velocity } from "../components/velocity";
-import { EMovement, GameStore } from "../models/game-store";
-import { Character } from "../components/character";
-import { Position } from "../components/position";
-import { Camera, CameraFollowMethod } from "../models/camera";
-import { lerp, PIXELS_PER_METER } from "../app/util";
 
 export class CharacterSystem extends System {
     readonly query = new Query({
         _character: WithTag(ETags.character),
+        entity: ReadEntity(),
         pos: Read(Position),
+        rotation: Write(Rotation),
         velocity: Write(Velocity),
     });
 
     gameStore!: GameStore;
+    commonStore!: CommonStore;
     camera!: Camera;
     ctx!: CanvasRenderingContext2D;
 
     setup(actions: ISystemActions) {
         this.ctx = actions.getResource(CanvasRenderingContext2D);
+        this.commonStore = actions.getResource(CommonStore);
         this.gameStore = actions.getResource(GameStore);
         this.camera = actions.getResource(Camera);
 
@@ -42,16 +46,30 @@ export class CharacterSystem extends System {
     runs = 0
 
     run(actions: ISystemActions) {
-        this.camera.zoom += this.gameStore.input.wheel / 10;
+        this.camera.zoom += this.commonStore.input.wheel / 10;
 
-        this.query.execute(({pos, velocity}) => {
+        this.query.execute(({rotation, pos, velocity}) => {
+            // delete test passed.
+            // if (this.camera.zoom < 0.8) {
+            //     entity.addTag(ETags.destroyEntity);
+            // }
+
+            if (this.commonStore.input.isKeyDown(CODE_E)) {
+                rotation.value += 0.01;
+            }
+
+            if (this.commonStore.input.isKeyDown(CODE_Q)) {
+                rotation.value -= 0.01;
+            }
+
             this.camera.follow!.target = pos;
+            this.camera.follow!.targetAngle = rotation.value;
 
-            const dt = this.gameStore.lastFrameDeltaTime;
+            const dt = this.commonStore.lastFrameDeltaTime;
 
             const {
                 characterMovement: move
-            } = this.gameStore.input.actions;
+            } = this.gameStore.actions;
 
             const isLeft = (move & EMovement.left) === EMovement.left;
             const isRight = (move & EMovement.right) === EMovement.right;
@@ -74,10 +92,18 @@ export class CharacterSystem extends System {
                 velocity.y = 0;
             }
 
+            const {
+                x: vx, 
+                y: vy
+            } = velocity;
+
+            const [sin, cos] = rotation.sin_cos;
+
+            velocity.x = vx * cos - vy * sin;
+            velocity.y = vx * sin + vy * cos;
+
             velocity.normalize();
-            velocity.scale(dt * 1000 * 10/PIXELS_PER_METER);
-            
-            // console.log(velocity);
+            velocity.scale(dt * 60 * 2);
         });
     }
 }

@@ -1,39 +1,20 @@
-import './server';
-import { Level } from './levels/level.h';
 import { Topdown } from './levels/topdown';
 import './scss/app.scss';
-import { loadPhysics, _Box2D } from './server';
+import { Level } from './engine/level.h';
+import { updateRenderContext } from './engine';
+import { _Box2D, loadPhysics } from './engine/server';
+
+window.addEventListener('resize', updateRenderContext);
 
 const _fetch = window.fetch;
-
 window.fetch = (
     input: RequestInfo,
     init?: RequestInit | undefined): Promise<Response> => {
     if (init?.credentials === 'same-origin') {
         delete init.credentials;
     }
-    console.log(input, init);
     return _fetch(input, init);
 }
-
-export const prepareRenderContext = () => {
-    const canvasEle = document.querySelector('canvas');
-    if (!canvasEle) throw new Error('Could not find canvas element!');
-
-    const renderContext = canvasEle.getContext('2d');
-    if (!renderContext) throw new Error('Could not initialize 2D context');
-
-    const canvasBoundingRect = canvasEle.getBoundingClientRect();
-
-    canvasEle.width = canvasBoundingRect.width;
-    canvasEle.height = canvasBoundingRect.height;
-
-    renderContext.imageSmoothingEnabled = false;
-
-    return renderContext;
-}
-
-window.addEventListener('resize', prepareRenderContext);
 
 const levels:{
     [name: string]: new (...args:[_Box2D]) => Level,

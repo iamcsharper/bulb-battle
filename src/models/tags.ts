@@ -1,7 +1,12 @@
-export enum ETags {
-    ui,
-    terrain,
+import { ECommonTags } from '../engine/models/common-tags';
+
+export enum MyTags {
+    save = ECommonTags.__LATEST,
     character,
     networkObject,
-    save,
+}
+
+export const ETags = {
+    ...ECommonTags,
+    ...MyTags,
 }

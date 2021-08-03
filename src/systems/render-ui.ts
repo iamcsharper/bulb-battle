@@ -1,10 +1,10 @@
 
 import {ISystemActions, Query, Read, System, With, WithTag} from "sim-ecs";
 import {UIItem} from "../components/ui-item";
-import { Position } from "../components/position";
 import { GameStore } from "../models/game-store";
 import { ETags } from "../models/tags";
-import { drawPoint } from "../app/util";
+import { Position } from "../engine/components/position";
+import { CommonStore } from "../engine/models/common-store";
 
 export class RenderUISystem extends System {
     readonly query = new Query({
@@ -15,11 +15,13 @@ export class RenderUISystem extends System {
 
     ctx!: CanvasRenderingContext2D;
     gameStore!: GameStore;
+    commonStore!: CommonStore;
     toScreenCoords!: (x: number, y: number) => [number, number];
 
     setup(actions: ISystemActions): void | Promise<void> {
         this.ctx = actions.getResource(CanvasRenderingContext2D);
         this.gameStore = actions.getResource(GameStore);
+        this.commonStore = actions.getResource(CommonStore);
     }
 
     runs = 0;
@@ -46,24 +48,24 @@ export class RenderUISystem extends System {
 
         this.ctx.fillText(
             `${
-                Math.floor(10*this.gameStore.timeSinceLevelLoaded)/10.0
+                Math.floor(10*this.commonStore.timeSinceLevelLoaded)/10.0
             } s.`,
             this.ctx.canvas.width - 200, 20
         );
 
         this.ctx.fillText(
             `${
-                Math.floor(this.gameStore.medianFps+0.5)
+                Math.floor(this.commonStore.medianFps+0.5)
             } FPS`,
             this.ctx.canvas.width - 200, 60
         );
 
         this.ctx.fillText(
-            `${this.gameStore.rendered} / ${this.gameStore.drawables}`,
+            `${this.commonStore.rendered} / ${this.commonStore.drawables}`,
             this.ctx.canvas.width - 200, 100
         );
         {
-            let str =this.gameStore.input.actions.characterMovement.toString(2);
+            let str =this.gameStore.actions.characterMovement.toString(2);
             str = '0'.repeat(4 - str.length) + str;
             this.ctx.fillText(
                 `${str}`,

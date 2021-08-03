@@ -1,11 +1,9 @@
-import { _Box2D } from "../server";
 import {ISystemActions, ReadEntity, Query, Read, System, Write} from "sim-ecs";
 import { Position } from "../components/position";
 import { Rotation } from "../components/rotation";
 import {Velocity} from "../components/velocity";
-import { GameStore } from "../models/game-store";
+import { CommonStore } from "../models/common-store";
 import { PhysicsBridge } from "../components/physics-bridge";
-
 
 export class PhysicsSystem extends System {
     readonly query = new Query({
@@ -22,7 +20,7 @@ export class PhysicsSystem extends System {
             physicsNamespace: {
                 b2World
             }
-        } = actions.getResource(GameStore);
+        } = actions.getResource(CommonStore);
         this.physWorld = actions.getResource(b2World);
     }
 
@@ -34,7 +32,7 @@ export class PhysicsSystem extends System {
                 getPointer,
                 NULL
             }
-        } = actions.getResource(GameStore);
+        } = actions.getResource(CommonStore);
 
         // const hashBodies:Record<number, Box2D.b2Body> = {};
         // let ptr: number;
@@ -53,10 +51,11 @@ export class PhysicsSystem extends System {
                 const body = phys.bodyPtr;
                 if (!body) return;
                 const {x, y} = body.GetPosition();
-                console.log(x, y);
+                const angle = body.GetAngle();
 
                 pos.x = x;
                 pos.y = y;
+                rot.value = angle;
             } else {
                 pos.x += vel.x * dt;
                 pos.y += vel.y * dt;
