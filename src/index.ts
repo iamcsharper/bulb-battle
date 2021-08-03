@@ -1,8 +1,7 @@
 import { Topdown } from './levels/topdown';
 import './scss/app.scss';
-import { Level } from './engine/level.h';
+import { Level, loadPhysics, _Box2D } from './engine/';
 import { updateRenderContext } from './engine';
-import { _Box2D, loadPhysics } from './engine/server';
 
 window.addEventListener('resize', updateRenderContext);
 

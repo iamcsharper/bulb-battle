@@ -1,14 +1,6 @@
 import {ITransitionActions, Query, SerialFormat, State, TGroupHandle, With, WithTag} from "sim-ecs";
 import { load } from "../app/persistence";
-import { PhysicsBridge } from "../engine/components/physics-bridge";
-import { Position } from "../engine/components/position";
-import { Shape, ShapePrimitive } from "../engine/components/shape";
-import { CommonStore } from "../engine/models/common-store";
-import { CameraSystem } from "../engine/systems/camera";
-import { CollisionSystem } from "../engine/systems/collision";
-import { GcSystem } from "../engine/systems/gc";
-import { InputSystem } from "../engine/systems/input";
-import { PhysicsSystem } from "../engine/systems/physics";
+import { PhysicsSystem, CollisionSystem, InputSystem, CameraSystem, GcSystem, CommonStore, Shape, Position, PhysicsBridge, ShapePrimitive } from "../engine";
 import { GameStore } from "../models/game-store";
 import { gamePrefab } from "../prefabs/game";
 import { savablePrefab } from "../prefabs/savable";

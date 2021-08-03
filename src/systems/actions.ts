@@ -1,10 +1,7 @@
 import { ISystemActions, System } from "sim-ecs";
 import * as KeyCode from 'keycode-js';
-
-import { EMovement } from "../engine/models/movement";
-import { EKeyState } from "../engine/systems/input";
 import { GameStore } from "../models/game-store";
-import { CommonStore } from "../engine/models/common-store";
+import { CommonStore, EMovement, EKeyState } from "../engine";
 
 export class ActionsSystem extends System {
     gameStore!: GameStore;

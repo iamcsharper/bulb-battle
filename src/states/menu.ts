@@ -3,7 +3,7 @@ import {menuPrefab} from "../prefabs/menu";
 import {MenuSystem} from "../systems/menu";
 import {RenderUISystem} from "../systems/render-ui";
 import {GameStore} from "../models/game-store";
-import { InputSystem } from "../engine/systems/input";
+import { InputSystem } from "../engine/";
 import { ActionsSystem } from "../systems/actions";
 
 export class MenuState extends State {

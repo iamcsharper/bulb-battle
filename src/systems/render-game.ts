@@ -1,13 +1,6 @@
 import {ISystemActions, Query, Read, System, Write} from "sim-ecs";
-import { Material } from "../engine/components/material";
-import { Position } from "../engine/components/position";
-import { Rotation } from "../engine/components/rotation";
-import { Shape, ShapePrimitive, ShapePivotNames } from "../engine/components/shape";
-import { Camera } from "../engine/models/camera";
-import { CommonStore } from "../engine/models/common-store";
-import { IRect, Rect } from "../engine/models/rect";
+import { Position, Rotation, Shape, Material, CommonStore, Camera, IRect, Rect, ShapePrimitive, ShapePivotNames } from "../engine";
 import { PIXELS_PER_METER, TWOPI, drawPoint } from "../engine/util";
-import { GameStore } from "../models/game-store";
 
 export class RenderGameSystem extends System {
     readonly query = new Query({
@@ -18,7 +11,6 @@ export class RenderGameSystem extends System {
     });
 
     ctx!: CanvasRenderingContext2D;
-    gameStore!: GameStore;
     commonStore!: CommonStore;
     camera!: Camera;
 
@@ -27,7 +19,6 @@ export class RenderGameSystem extends System {
 
     setup(actions: ISystemActions): void | Promise<void> {
         this.ctx = actions.getResource(CanvasRenderingContext2D);
-        this.gameStore = actions.getResource(GameStore);
         this.commonStore = actions.getResource(CommonStore);
         this.camera = actions.getResource(Camera);
 

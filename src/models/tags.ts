@@ -1,4 +1,4 @@
-import { ECommonTags } from '../engine/models/common-tags';
+import { ECommonTags } from '../engine/';
 
 export enum MyTags {
     save = ECommonTags.__LATEST,

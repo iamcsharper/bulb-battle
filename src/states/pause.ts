@@ -5,7 +5,7 @@ import {GameStore} from "../models/game-store";
 import {save} from "../app/persistence";
 import {RenderUISystem} from "../systems/render-ui";
 import {RenderGameSystem} from "../systems/render-game";
-import { InputSystem } from "../engine/systems/input";
+import { InputSystem } from "../engine/";
 import { ActionsSystem } from "../systems/actions";
 
 export class PauseState extends State {

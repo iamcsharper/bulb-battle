@@ -1,7 +1,6 @@
 import { IWorld, TStateProto } from "sim-ecs";
-import { updateRenderContext } from "./";
-import { beforeFrameHandler } from "../app/frame-transition-handlers";
-import { _Box2D } from "./server";
+import { updateRenderContext, _Box2D } from "..";
+import { beforeFrameHandler } from "../../app/frame-transition-handlers";
 
 export interface ILevel {
     name: string;
