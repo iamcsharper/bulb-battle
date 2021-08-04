@@ -85,10 +85,17 @@ export class CommonStore {
         },
 
         isAnyKeyDifferent(key: string[], state: EKeyState): boolean {
-            return key.some(e => (
+            const res = key.some(e => (
                 this.keyStates.get(e) === state &&
                 this.prevKeyStates.get(e) !== state
             ));
+
+            if (res) {
+                for (const k of key)
+                    this.resetPrevKey(k);
+            }
+
+            return res;
         },
 
         isKeyDown(key: string): boolean {

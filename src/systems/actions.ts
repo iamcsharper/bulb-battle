@@ -39,17 +39,18 @@ export class ActionsSystem extends System {
         neg: EMovement,
         menu?: EMovement
     ) {
+        if (menu) {
+            if (this.commonStore.input.isAnyKeyDifferent(triggers, EKeyState.Down)) {
+                this.gameStore.actions.menuMovement = menu;
+            }
+        }
+
         if (this.commonStore.input.isAnyKey(triggers, EKeyState.Down)) {
             this.gameStore.actions.characterMovement |= pos;
             this.gameStore.actions.characterMovement &= ~neg;
-            if (menu)
-                this.gameStore.actions.menuMovement = menu; 
         } else if (this.commonStore.input.isAnyKeyDifferent(
-            triggers, EKeyState.Up)) {;
-            this.gameStore.actions.characterMovement &= ~pos;
-
-            if (menu)
-                this.gameStore.actions.menuMovement = EMovement.idle; 
+            triggers, EKeyState.Up)) {
+            this.gameStore.actions.characterMovement &= ~pos;        
         }
     }
 

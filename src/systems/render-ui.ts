@@ -72,5 +72,14 @@ export class RenderUISystem extends System {
                 this.ctx.canvas.width - 200, 140
             )
         }
+        
+        {
+            let str =this.gameStore.actions.menuMovement.toString(2);
+            str = '0'.repeat(4 - str.length) + str;
+            this.ctx.fillText(
+                `MENU: ${str}`,
+                this.ctx.canvas.width - 200, 180
+            )
+        }
     }
 }
