@@ -1,4 +1,4 @@
-import { IVector2D } from "../../src/engine/";
+import { IVector2D } from "../../src/engine/models/vector2d";
 
 export const verticies: IVector2D[] = [
     {x:-0.358251, y:-4.302196},

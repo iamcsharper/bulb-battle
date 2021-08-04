@@ -1,3 +1,4 @@
+import { _Box2D } from "../server";
 import {ISystemActions, System} from "sim-ecs";
 import { Camera, CameraFollowMethod } from "../models/camera";
 import { angleLerp, lerp, PIXELS_PER_METER } from "../util";

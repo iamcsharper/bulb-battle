@@ -4,7 +4,7 @@ import {GameStore} from "../models/game-store";
 import {EActions} from "../app/actions";
 import {GameState} from "../states/game";
 import { MenuState } from "../states/menu";
-import { EMovement } from "../engine/";
+import { EMovement } from "../engine/models/movement";
 
 export class MenuSystem extends System {
     readonly _states = [

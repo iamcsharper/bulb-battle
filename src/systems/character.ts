@@ -1,6 +1,12 @@
 import { CODE_E, CODE_Q } from "keycode-js";
 import {ISystemActions, Query, Read, ReadEntity, System, WithTag, Write} from "sim-ecs";
-import { Position, Rotation, Velocity, CommonStore, Camera, CameraFollowMethod, EMovement } from "../engine";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Velocity } from "../engine/components/velocity";
+import { Camera, CameraFollowMethod } from "../engine/models/camera";
+import { CommonStore } from "../engine/models/common-store";
+import { EMovement } from "../engine/models/movement";
+import { EKeyState } from "../engine/systems/input";
 import { GameStore } from "../models/game-store";
 import { ETags } from "../models/tags";
 

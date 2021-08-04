@@ -1,5 +1,5 @@
 import {ISystemActions, Query, Read, System} from "sim-ecs";
-import { CommonStore } from "../engine/";
+import { CommonStore } from "../engine/models/common-store";
 import {GameStore} from "../models/game-store";
 import {GameState} from "../states/game";
 import {PauseState} from "../states/pause";

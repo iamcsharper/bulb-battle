@@ -1,7 +1,8 @@
 import {GameStore} from "../models/game-store";
 import {ITransitionActions} from "sim-ecs";
 import { PauseState } from "../states/pause";
-import { hrtime , CommonStore } from "../engine";
+import { hrtime } from "../engine";
+import { CommonStore } from "../engine/models/common-store";
 
 const hrtimeToSeconds = (s_ns: number[]) => (
   s_ns[0] + s_ns[1] * 1e-9

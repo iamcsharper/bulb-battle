@@ -2,7 +2,13 @@ import {ETags} from "../models/tags";
 import {CTagMarker} from 'sim-ecs';
 import { verticies } from "../../res/meshes/1";
 import { Character } from "../components/character";
-import { Collision, Material, Mesh, Position, Rotation, Shape, ShapePivot, ShapePrimitive, Velocity } from "../engine";
+import { Collision } from "../engine/components/collision";
+import { Material } from "../engine/components/material";
+import { Mesh } from "../engine/components/mesh";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape, ShapePrimitive, ShapePivot } from "../engine/components/shape";
+import { Velocity } from "../engine/components/velocity";
 
 export const savablePrefab = [
     { // Character

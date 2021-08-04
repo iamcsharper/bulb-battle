@@ -1,11 +1,31 @@
 import { ECS, IWorld } from "sim-ecs";
 import { Character } from "../components/character";
 import { UIItem } from "../components/ui-item";
-import { Camera, Collision, CommonStore, Material, Mesh, PhysicsBridge, Position, Rotation, Shape, Velocity } from "../engine/";
+import { Collision } from "../engine/components/collision";
+import { Material } from "../engine/components/material";
+import { Mesh } from "../engine/components/mesh";
+import { PhysicsBridge } from "../engine/components/physics-bridge";
+import { Position } from "../engine/components/position";
+import { Rotation } from "../engine/components/rotation";
+import { Shape } from "../engine/components/shape";
+import { Velocity } from "../engine/components/velocity";
+import { Level } from "../engine/level.h";
+import { Camera } from "../engine/models/camera";
+import { CommonStore } from "../engine/models/common-store";
+import { _Box2D } from "../engine/server";
+import { CameraSystem } from "../engine/systems/camera";
+import { CollisionSystem } from "../engine/systems/collision";
+import { GcSystem } from "../engine/systems/gc";
+import { InputSystem } from "../engine/systems/input";
+import { PhysicsSystem } from "../engine/systems/physics";
 import { GameStore } from "../models/game-store";
 import { MenuState } from "../states/menu";
-import { ActionsSystem, CharacterSystem, MenuSystem, PauseSystem, RenderGameSystem, RenderUISystem } from "../systems/";
-import { CameraSystem, CollisionSystem, GcSystem, InputSystem, Level, PhysicsSystem, _Box2D } from "../engine/";
+import { ActionsSystem } from "../systems/actions";
+import { CharacterSystem } from "../systems/character";
+import { MenuSystem } from "../systems/menu";
+import { PauseSystem } from "../systems/pause";
+import { RenderGameSystem } from "../systems/render-game";
+import { RenderUISystem } from "../systems/render-ui";
 
 export class Topdown extends Level {
     readonly initialState = MenuState;

@@ -1,3 +1,4 @@
+import { _Box2D } from "../server";
 import {ISystemActions, ReadEntity, Query, System, WithTag} from "sim-ecs";
 import { PhysicsBridge } from "../components/physics-bridge";
 import { ECommonTags } from "../models/common-tags";
